@@ -1,0 +1,271 @@
+{
+  "version": "2026.10.13",
+  "rules": [
+    {
+      "id": "TEST-ANTIV",
+      "name": "AntiV-Test-File",
+      "severity": "alta",
+      "kinds": [
+        "any"
+      ],
+      "hex": [
+        "414e5449562d544553542d5349474e41545552452d444f2d4e4f542d50414e4943"
+      ],
+      "description": "Arquivo de teste inofensivo do AntiV"
+    },
+    {
+      "id": "EICAR",
+      "name": "EICAR-Test-File",
+      "severity": "alta",
+      "kinds": [
+        "any"
+      ],
+      "hex": [
+        "58354f2150254041505b345c505a58353428505e2937434329377d2445494341522d5354414e444152442d414e544956495255532d544553542d46494c452124482b482a"
+      ],
+      "description": "Arquivo de teste padrao EICAR (inofensivo)"
+    },
+    {
+      "id": "WANNACRY-STR",
+      "name": "Ransom.WannaCry-String",
+      "severity": "alta",
+      "kinds": [
+        "pe"
+      ],
+      "hex": [
+        "697571657266736f64703969666a61706f7364666a68676f737572696a6661657772776572677765612e636f6d"
+      ],
+      "description": "Dominio 'kill-switch' presente em amostras do WannaCry"
+    },
+    {
+      "id": "HACKTOOL-CREDS",
+      "name": "HackTool.CredentialDumper",
+      "severity": "suspeito",
+      "kinds": [
+        "pe",
+        "script"
+      ],
+      "nocase": true,
+      "hex": [
+        "73656b75726c73613a3a6c6f676f6e70617373776f726473",
+        "67656e74696c6b697769",
+        "6d696d696b61747a"
+      ],
+      "description": "Strings de ferramenta de extracao de credenciais"
+    },
+    {
+      "id": "PS-ENCODED",
+      "name": "Script.PowerShell.ComandoCodificado",
+      "severity": "suspeito",
+      "kinds": [
+        "script",
+        "lnk"
+      ],
+      "nocase": true,
+      "wide": true,
+      "strings": [
+        "-encodedcommand",
+        "-enc ",
+        "-ec "
+      ],
+      "also": [
+        "powershell"
+      ],
+      "description": "PowerShell executando comando codificado em Base64"
+    },
+    {
+      "id": "PS-DOWNLOAD-EXEC",
+      "name": "Script.PowerShell.DownloadExecucao",
+      "severity": "suspeito",
+      "kinds": [
+        "script"
+      ],
+      "nocase": true,
+      "strings": [
+        "downloadstring(",
+        "downloadfile(",
+        "invoke-webrequest",
+        "start-bitstransfer",
+        "net.webclient",
+        "iwr "
+      ],
+      "also": [
+        "invoke-expression",
+        "iex ",
+        "iex(",
+        "| iex",
+        "start-process",
+        "[reflection.assembly]::load"
+      ],
+      "description": "Baixa conteudo da internet e executa em seguida"
+    },
+    {
+      "id": "PS-AMSI",
+      "name": "Script.PowerShell.BypassAMSI",
+      "severity": "suspeito",
+      "kinds": [
+        "script"
+      ],
+      "nocase": true,
+      "strings": [
+        "amsiutils",
+        "amsiinitfailed"
+      ],
+      "description": "Tentativa de desativar o AMSI (scan de scripts do Windows)"
+    },
+    {
+      "id": "DEFENDER-OFF",
+      "name": "Script.DesativaDefender",
+      "severity": "suspeito",
+      "kinds": [
+        "script"
+      ],
+      "nocase": true,
+      "strings": [
+        "set-mppreference -disablerealtimemonitoring",
+        "add-mppreference -exclusionpath",
+        "disableantispyware"
+      ],
+      "description": "Tenta desativar ou criar excecoes no Windows Defender"
+    },
+    {
+      "id": "LOLBIN-CERTUTIL",
+      "name": "Script.CertutilDownload",
+      "severity": "suspeito",
+      "kinds": [
+        "script"
+      ],
+      "nocase": true,
+      "strings": [
+        "certutil -urlcache",
+        "certutil.exe -urlcache"
+      ],
+      "description": "Uso do certutil para baixar arquivos"
+    },
+    {
+      "id": "LOLBIN-BITSADMIN",
+      "name": "Script.BitsadminDownload",
+      "severity": "suspeito",
+      "kinds": [
+        "script"
+      ],
+      "nocase": true,
+      "strings": [
+        "bitsadmin /transfer",
+        "bitsadmin.exe /transfer"
+      ],
+      "description": "Uso do bitsadmin para baixar arquivos"
+    },
+    {
+      "id": "LOLBIN-MSHTA",
+      "name": "Script.MshtaRemoto",
+      "severity": "suspeito",
+      "kinds": [
+        "script",
+        "lnk"
+      ],
+      "nocase": true,
+      "wide": true,
+      "strings": [
+        "mshta http",
+        "mshta vbscript:",
+        "mshta javascript:"
+      ],
+      "description": "mshta executando conteudo remoto ou inline"
+    },
+    {
+      "id": "RANSOM-BACKUP-WIPE",
+      "name": "Script.ApagaBackups",
+      "severity": "suspeito",
+      "kinds": [
+        "script"
+      ],
+      "nocase": true,
+      "strings": [
+        "vssadmin delete shadows",
+        "vssadmin.exe delete shadows",
+        "wmic shadowcopy delete",
+        "wbadmin delete catalog",
+        "recoveryenabled no"
+      ],
+      "description": "Apaga copias de sombra/backups (comportamento tipico de ransomware)"
+    },
+    {
+      "id": "VBS-DOWNLOAD",
+      "name": "Script.VBS.DownloadGravacao",
+      "severity": "suspeito",
+      "kinds": [
+        "script"
+      ],
+      "nocase": true,
+      "strings": [
+        "msxml2.xmlhttp",
+        "microsoft.xmlhttp",
+        "winhttp.winhttprequest"
+      ],
+      "also": [
+        "adodb.stream"
+      ],
+      "description": "Baixa dados e grava em disco via ADODB.Stream"
+    },
+    {
+      "id": "PERSIST-RUN",
+      "name": "Script.PersistenciaRun",
+      "severity": "info",
+      "kinds": [
+        "script"
+      ],
+      "nocase": true,
+      "strings": [
+        "currentversion\\run"
+      ],
+      "also": [
+        "reg add",
+        "regwrite",
+        "set-itemproperty",
+        "new-itemproperty"
+      ],
+      "description": "Cria entrada de inicializacao automatica no registro"
+    },
+    {
+      "id": "AUTORUN-INF",
+      "name": "Worm.AutorunInf",
+      "severity": "suspeito",
+      "kinds": [
+        "inf"
+      ],
+      "nocase": true,
+      "strings": [
+        "open=",
+        "shellexecute=",
+        "shell\\open\\command",
+        "shell\\explore\\command"
+      ],
+      "also": [
+        "[autorun]"
+      ],
+      "description": "autorun.inf que executa programa ao conectar a midia (pendrives/HDs)"
+    },
+    {
+      "id": "LNK-CMD",
+      "name": "Script.AtalhoMalicioso",
+      "severity": "suspeito",
+      "kinds": [
+        "lnk"
+      ],
+      "nocase": true,
+      "wide": true,
+      "strings": [
+        "cmd.exe /c",
+        "cmd /c",
+        "-windowstyle hidden",
+        "-w hidden",
+        "-executionpolicy bypass",
+        "-ep bypass",
+        "wscript",
+        "cscript"
+      ],
+      "description": "Atalho .lnk que dispara comandos ocultos (comum em 'virus de atalho')"
+    }
+  ]
+}

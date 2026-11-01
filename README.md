@@ -1,4 +1,4 @@
-AntiV
+# AntiV
 
 Antivírus simples para Windows 10 feito em Python. Ele varre arquivos e pastas, olha os processos que estão rodando e tem um monitor em tempo real que avisa quando acontece alguma coisa estranha no computador.
 
@@ -15,15 +15,15 @@ Antivírus simples para Windows 10 feito em Python. Ele varre arquivos e pastas,
 * monitor em tempo real: processos, rede, arquivos novos, ransomware e itens de inicialização
 * interface gráfica (tkinter) e também funciona pelo terminal
 
+## Como instalar
 
-como se instala?
 Precisa do Python 3.10 ou mais novo. Na instalação do Python, marque "Add Python to PATH" e deixe marcada a opção do tcl/tk, que é o que traz a interface gráfica.
 
 ```
 pip install -r requirements.txt
 ```
 
-como usar
+## Como usar
 
 Interface gráfica: dê dois cliques no `AntiV.pyw` (ou rode `python -m antiv`). Se der algum erro, o `Iniciar_AntiV.bat` mostra a mensagem no terminal.
 
@@ -41,7 +41,7 @@ python -m antiv quarantine restore --id ID_DO_ITEM
 
 Para escanear o `C:\` inteiro, abra como Administrador, senão algumas pastas do sistema ficam com acesso negado.
 
-Modos de varredura
+### Modos de varredura
 
 * rápida: só arquivos com extensão de risco (exe, dll, scripts, documentos do Office, zip e parecidos)
 * completa: todos os arquivos, é o padrão
@@ -49,7 +49,7 @@ Modos de varredura
 
 Em SSD ele usa várias threads. Em HD usa poucas threads e lê em blocos grandes, porque ler muita coisa ao mesmo tempo deixa o HD mais lento. O tipo do disco é detectado sozinho, mas dá para escolher na mão. Arquivos que não mudaram desde a última varredura são pulados (cache).
 
-Monitor em tempo real
+## Monitor em tempo real
 
 Fica na aba "Monitor em tempo real" ou no comando `python -m antiv monitor`. Ele não olha só o arquivo, olha o comportamento:
 
@@ -62,7 +62,8 @@ Cada processo recebe uma pontuação: 40 ou mais é aviso, 70 ou mais é alto e 
 
 Dá para suspender, encerrar ou isolar o programa pelos botões da aba. Nada acontece sozinho por padrão. Em alertas altos ele salva um dossiê em `incidents/` e a telemetria fica em `logs/telemetry.jsonl`. O botão "Testar monitor" inicia um processo inofensivo só para gerar um alerta de teste.
 
-estrutura
+## Estrutura
+
 ```
 antiv/            código do programa
   engine.py       varredura paralela
@@ -77,7 +78,7 @@ data/             regras e lista de assinaturas
 tests/            testes
 ```
 
-Testes
+## Testes
 
 ```
 python -m unittest discover -s tests -v
@@ -87,7 +88,8 @@ Para ver uma detecção sem o Defender atrapalhar, vá na aba "Base de dados", c
 
 Para aumentar a base, use o botão "Importar lista de hashes" (um arquivo txt ou csv com hashes SHA-256).
 
-limitações
+## Limitações
+
 * só detecta o que as regras e os hashes descrevem, a base é pequena
 * o monitor roda em modo usuário (usa psutil), não tem driver de kernel, então processos que duram menos de uns 0,3 segundos podem passar
 * não faz sandbox, não lê a memória dos processos e não confere assinatura digital
@@ -97,6 +99,6 @@ limitações
 * sem o pacote `watchdog` os arquivos são vigiados por varredura periódica, que é mais pesada
 * o Defender pode reclamar dos arquivos `data/rules.json` e `data/behavior_rules.json`, porque eles têm texto de comandos suspeitos usados como regra. Se acontecer, adicione a pasta do projeto nas exclusões
 
-aviso!!!
+## Aviso
 
 Use por sua conta e risco, em computadores seus ou que você tem permissão para mexer. O projeto é para estudo.

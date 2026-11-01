@@ -1,0 +1,369 @@
+{
+ "version": "2026.10.15",
+ "cmdline_rules": [
+  {
+   "id": "PS-ENCODED",
+   "name": "PowerShell com comando codificado em Base64",
+   "points": 45,
+   "technique": "T1059.001",
+   "description": "Esconde o que o script faz",
+   "patterns": [
+    "\\s-e(nc(odedcommand)?)?\\s+['\\\"]?[A-Za-z0-9+/=]{30,}"
+   ],
+   "processes": [
+    "powershell.exe",
+    "pwsh.exe"
+   ]
+  },
+  {
+   "id": "PS-HIDDEN",
+   "name": "PowerShell oculto / sem politica de execucao",
+   "points": 25,
+   "technique": "T1059.001",
+   "description": "Janela oculta e bypass de politica",
+   "patterns": [
+    "-w(indowstyle)?\\s+(hidden|h)\\b",
+    "-nop(rofile)?\\b.*-(ep|executionpolicy)\\s+bypass",
+    "-(ep|executionpolicy)\\s+bypass.*-nop"
+   ],
+   "processes": [
+    "powershell.exe",
+    "pwsh.exe"
+   ]
+  },
+  {
+   "id": "PS-DOWNLOAD-EXEC",
+   "name": "PowerShell baixa e executa conteudo da internet",
+   "points": 55,
+   "technique": "T1105",
+   "description": "Download seguido de execucao",
+   "patterns": [
+    "downloadstring|downloadfile|invoke-webrequest|\\biwr\\b|start-bitstransfer|net\\.webclient|invoke-restmethod"
+   ],
+   "processes": [
+    "powershell.exe",
+    "pwsh.exe"
+   ],
+   "also": [
+    "\\biex\\b|invoke-expression|start-process|\\|\\s*iex"
+   ]
+  },
+  {
+   "id": "DEFENDER-TAMPER",
+   "name": "Tentativa de desativar o antivirus/AMSI",
+   "points": 60,
+   "technique": "T1562.001",
+   "description": "Malware tenta cegar a protecao",
+   "patterns": [
+    "amsiutils|amsiinitfailed",
+    "set-mppreference\\s.*(disablerealtimemonitoring|disableioavprotection)",
+    "add-mppreference\\s.*-exclusion",
+    "disableantispyware",
+    "sc(\\.exe)?\\s+(stop|config)\\s+windefend"
+   ]
+  },
+  {
+   "id": "CERTUTIL-DOWNLOAD",
+   "name": "certutil usado para baixar arquivos",
+   "points": 45,
+   "technique": "T1105",
+   "description": "Uso indevido de ferramenta do Windows (LOLBin)",
+   "patterns": [
+    "certutil(\\.exe)?.*-(urlcache|verifyctl)"
+   ]
+  },
+  {
+   "id": "BITSADMIN-DOWNLOAD",
+   "name": "bitsadmin usado para baixar arquivos",
+   "points": 40,
+   "technique": "T1197",
+   "description": "",
+   "patterns": [
+    "bitsadmin(\\.exe)?.*/transfer"
+   ]
+  },
+  {
+   "id": "MSHTA-REMOTE",
+   "name": "mshta executando conteudo remoto/inline",
+   "points": 50,
+   "technique": "T1218.005",
+   "description": "",
+   "patterns": [
+    "mshta(\\.exe)?\\s+[\\\"']?(https?:|vbscript:|javascript:)"
+   ]
+  },
+  {
+   "id": "REGSVR32-SQUIBLEE",
+   "name": "regsvr32 carregando script remoto",
+   "points": 55,
+   "technique": "T1218.010",
+   "description": "",
+   "patterns": [
+    "regsvr32(\\.exe)?.*(/i:https?|scrobj\\.dll)"
+   ]
+  },
+  {
+   "id": "RUNDLL32-ABUSE",
+   "name": "rundll32 executando script/HTML",
+   "points": 55,
+   "technique": "T1218.011",
+   "description": "",
+   "patterns": [
+    "rundll32(\\.exe)?.*(javascript:|mshtml,\\s*runhtmlapplication)"
+   ]
+  },
+  {
+   "id": "WMIC-EXEC",
+   "name": "wmic criando processos/executando remotamente",
+   "points": 40,
+   "technique": "T1047",
+   "description": "",
+   "patterns": [
+    "wmic(\\.exe)?.*(process\\s+call\\s+create|/node:)"
+   ]
+  },
+  {
+   "id": "RECOVERY-INHIBIT",
+   "name": "Apagando copias de sombra/backups (tipico de ransomware)",
+   "points": 85,
+   "technique": "T1490",
+   "description": "Impede a recuperacao dos arquivos",
+   "patterns": [
+    "vssadmin(\\.exe)?\\s+delete\\s+shadows",
+    "wmic(\\.exe)?.*shadowcopy.*delete",
+    "wbadmin(\\.exe)?\\s+delete\\s+(catalog|backup|systemstatebackup)",
+    "bcdedit(\\.exe)?.*recoveryenabled\\s+no",
+    "bcdedit(\\.exe)?.*bootstatuspolicy\\s+ignoreallfailures",
+    "resize\\s+shadowstorage.*maxsize=\\s*(401mb|unbounded)"
+   ]
+  },
+  {
+   "id": "SCHTASK-SUSPECT",
+   "name": "Tarefa agendada executando interpretador/pasta temporaria",
+   "points": 40,
+   "technique": "T1053.005",
+   "description": "",
+   "patterns": [
+    "schtasks(\\.exe)?\\s.*/create\\s.*(powershell|cmd(\\.exe)?\\s+/c|wscript|cscript|mshta|rundll32|\\\\temp\\\\|\\\\appdata\\\\|\\\\users\\\\public\\\\)"
+   ]
+  },
+  {
+   "id": "REG-PERSIST",
+   "name": "Entrada de inicializacao automatica via reg.exe",
+   "points": 35,
+   "technique": "T1547.001",
+   "description": "",
+   "patterns": [
+    "reg(\\.exe)?\\s+add\\s.*\\\\(currentversion\\\\run(once)?|winlogon\\\\(shell|userinit))\\b"
+   ]
+  },
+  {
+   "id": "NET-USER-ADD",
+   "name": "Criacao de usuario/administrador local",
+   "points": 45,
+   "technique": "T1136.001",
+   "description": "",
+   "patterns": [
+    "net1?(\\.exe)?\\s+(user\\s+\\S+\\s+\\S+\\s+/add|localgroup\\s+administrators\\s+\\S+\\s+/add)"
+   ]
+  },
+  {
+   "id": "CLEAR-LOGS",
+   "name": "Limpeza de logs de eventos do Windows",
+   "points": 60,
+   "technique": "T1070.001",
+   "description": "Apaga rastros",
+   "patterns": [
+    "wevtutil(\\.exe)?\\s+(cl|clear-log)\\b|clear-eventlog"
+   ]
+  },
+  {
+   "id": "FIREWALL-OFF",
+   "name": "Firewall do Windows sendo desativado",
+   "points": 40,
+   "technique": "T1562.004",
+   "description": "",
+   "patterns": [
+    "netsh(\\.exe)?\\s+.*(advfirewall\\s+set\\s+\\w+\\s+state\\s+off|firewall\\s+set\\s+opmode\\s+disable)"
+   ]
+  },
+  {
+   "id": "CRED-DUMP",
+   "name": "Extracao de credenciais (LSASS/SAM)",
+   "points": 75,
+   "technique": "T1003",
+   "description": "",
+   "patterns": [
+    "procdump(64)?(\\.exe)?.*lsass",
+    "reg(\\.exe)?\\s+save\\s+hklm\\\\(sam|security|system)",
+    "ntdsutil.*(ifm|snapshot)",
+    "comsvcs(\\.dll)?,\\s*#?(minidump|24)"
+   ]
+  },
+  {
+   "id": "UAC-BYPASS",
+   "name": "Bypass de UAC via chave de registro",
+   "points": 60,
+   "technique": "T1548.002",
+   "description": "",
+   "patterns": [
+    "software\\\\classes\\\\(ms-settings|mscfile)\\\\shell\\\\open\\\\command"
+   ]
+  },
+  {
+   "id": "SCRIPT-FROM-USERDIR",
+   "name": "Script executado de pasta temporaria/downloads",
+   "points": 40,
+   "technique": "T1059.005",
+   "description": "",
+   "patterns": [
+    "(wscript|cscript)(\\.exe)?\\s+.*(\\\\temp\\\\|\\\\appdata\\\\|\\\\users\\\\public\\\\|\\\\downloads\\\\).*\\.(vbs|vbe|js|jse|wsf)"
+   ]
+  },
+  {
+   "id": "DISABLE-TOOLS",
+   "name": "Desativando Gerenciador de Tarefas/Registro/CMD",
+   "points": 40,
+   "technique": "T1112",
+   "description": "",
+   "patterns": [
+    "disabletaskmgr|disableregistrytools|disablecmd"
+   ]
+  },
+  {
+   "id": "DOWNLOAD-TOOL",
+   "name": "curl/wget baixando executavel",
+   "points": 35,
+   "technique": "T1105",
+   "description": "",
+   "patterns": [
+    "(curl|wget)(\\.exe)?\\s+.*https?://.*(-o|--output)\\s+\\S+\\.(exe|dll|ps1|bat|vbs|js)"
+   ]
+  },
+  {
+   "id": "CMD-CARET-OBFUSC",
+   "name": "Linha de comando ofuscada com acentos circunflexos",
+   "points": 30,
+   "technique": "T1027",
+   "description": "Dificulta a leitura do comando",
+   "processes": [
+    "cmd.exe"
+   ],
+   "count_char": "^",
+   "min_matches": 10
+  },
+  {
+   "id": "CMD-ENV-OBFUSC",
+   "name": "Linha de comando ofuscada com variaveis de ambiente",
+   "points": 30,
+   "technique": "T1027",
+   "description": "",
+   "patterns": [
+    "%[a-z0-9_]+:~-?\\d+(,-?\\d+)?%"
+   ],
+   "min_matches": 3
+  },
+  {
+   "id": "TEST-TOKEN",
+   "name": "Teste inofensivo do monitor comportamental",
+   "points": 70,
+   "technique": "TESTE",
+   "description": "Gerado pelo botao/comando de teste do AntiV",
+   "patterns": [
+    "antiv-behavior-test"
+   ]
+  }
+ ],
+ "lineage_rules": [
+  {
+   "id": "OFFICE-SHELL",
+   "name": "Documento/leitor abriu interpretador de comandos",
+   "points": 60,
+   "technique": "T1204.002",
+   "description": "Macro ou exploit em documento executando comandos",
+   "parents": [
+    "winword.exe",
+    "excel.exe",
+    "powerpnt.exe",
+    "outlook.exe",
+    "onenote.exe",
+    "acrord32.exe",
+    "acrobat.exe",
+    "msaccess.exe"
+   ],
+   "children": [
+    "cmd.exe",
+    "powershell.exe",
+    "pwsh.exe",
+    "wscript.exe",
+    "cscript.exe",
+    "mshta.exe",
+    "rundll32.exe",
+    "regsvr32.exe",
+    "certutil.exe",
+    "bitsadmin.exe"
+   ]
+  },
+  {
+   "id": "SCRIPTHOST-CHAIN",
+   "name": "Host de script iniciou PowerShell/CMD",
+   "points": 35,
+   "technique": "T1059.005",
+   "description": "Cadeia tipica de downloaders",
+   "parents": [
+    "wscript.exe",
+    "cscript.exe",
+    "mshta.exe"
+   ],
+   "children": [
+    "powershell.exe",
+    "cmd.exe",
+    "pwsh.exe"
+   ]
+  },
+  {
+   "id": "WMI-SPAWN",
+   "name": "WMI iniciou interpretador de comandos",
+   "points": 40,
+   "technique": "T1047",
+   "description": "Execucao remota/lateral via WMI",
+   "parents": [
+    "wmiprvse.exe"
+   ],
+   "children": [
+    "powershell.exe",
+    "cmd.exe",
+    "pwsh.exe"
+   ]
+  },
+  {
+   "id": "BROWSER-SHELL",
+   "name": "Navegador iniciou interpretador de comandos",
+   "points": 30,
+   "technique": "T1189",
+   "description": "Possivel exploit de navegador ou download malicioso",
+   "parents": [
+    "chrome.exe",
+    "msedge.exe",
+    "firefox.exe",
+    "iexplore.exe"
+   ],
+   "children": [
+    "powershell.exe",
+    "cmd.exe",
+    "wscript.exe",
+    "cscript.exe",
+    "mshta.exe"
+   ]
+  }
+ ],
+ "never_network": [
+  "notepad.exe",
+  "calc.exe",
+  "calculatorapp.exe",
+  "mspaint.exe",
+  "write.exe",
+  "wordpad.exe",
+  "charmap.exe"
+ ]
+}
